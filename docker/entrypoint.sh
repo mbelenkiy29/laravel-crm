@@ -5,7 +5,7 @@ APP_DIR=/var/www/html
 cd "$APP_DIR"
 
 PORT="${PORT:-80}"
-sed -i "s/listen 80 /listen ${PORT} /g" /etc/nginx/conf.d/default.conf
+sed -i "s/listen 0.0.0.0:80 /listen 0.0.0.0:${PORT} /g" /etc/nginx/conf.d/default.conf
 
 export TZ="${TZ:-America/New_York}"
 export APP_TIMEZONE="${APP_TIMEZONE:-America/New_York}"
@@ -23,6 +23,7 @@ export DB_DATABASE="${DB_DATABASE:-krayin}"
 export DB_USERNAME="${DB_USERNAME:-krayin}"
 export DB_PASSWORD="${DB_PASSWORD:-}"
 export DB_PREFIX="${DB_PREFIX:-}"
+export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD:-}"
 export MAIL_HOST="${MAIL_HOST:-mailhog}"
 export MAIL_PORT="${MAIL_PORT:-1025}"
 export MAIL_USERNAME="${MAIL_USERNAME:-}"
@@ -88,17 +89,27 @@ file_put_contents(".env", $out);
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R ug+rwx storage bootstrap/cache
 
-wait_for_mysql() {
+wait_for_mysql_as() {
+    role="$1"
+    max="${2:-90}"
     i=0
-    while [ "$i" -lt 90 ]; do
-        if php -r '
+    while [ "$i" -lt "$max" ]; do
+        if WAIT_MYSQL_ROLE="$role" php -r '
+            $role = getenv("WAIT_MYSQL_ROLE") ?: "app";
             $host = getenv("DB_HOST");
             $port = getenv("DB_PORT") ?: "3306";
             $db = getenv("DB_DATABASE");
-            $user = getenv("DB_USERNAME");
-            $pass = getenv("DB_PASSWORD");
+            if ($role === "root") {
+                $user = "root";
+                $pass = getenv("MYSQL_ROOT_PASSWORD") ?: "";
+                $dsn = "mysql:host={$host};port={$port}";
+            } else {
+                $user = getenv("DB_USERNAME");
+                $pass = getenv("DB_PASSWORD");
+                $dsn = "mysql:host={$host};port={$port};dbname={$db}";
+            }
             try {
-                new PDO("mysql:host={$host};port={$port};dbname={$db}", $user, $pass);
+                new PDO($dsn, $user, $pass);
                 exit(0);
             } catch (Throwable $e) {
                 fwrite(STDERR, $e->getMessage()."\n");
@@ -108,14 +119,47 @@ wait_for_mysql() {
             return 0
         fi
         i=$((i + 1))
-        echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT} (${i}/90)..."
+        echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT} as ${role} (${i}/${max})..."
         sleep 2
     done
-    echo "MySQL did not become ready in time." >&2
+    echo "MySQL did not become ready as ${role} in time." >&2
     if [ -f /tmp/mysql-wait.err ]; then
         sed 's/using password: .*/using password: YES/' /tmp/mysql-wait.err >&2 || true
     fi
     return 1
+}
+
+sync_mysql_grants() {
+    if [ -z "${MYSQL_ROOT_PASSWORD:-}" ]; then
+        echo "MYSQL_ROOT_PASSWORD not set; skipping grant sync."
+        return 0
+    fi
+    php <<'PHP'
+<?php
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT') ?: '3306';
+$db = getenv('DB_DATABASE') ?: 'krayin';
+$user = getenv('DB_USERNAME') ?: 'krayin';
+$pass = getenv('DB_PASSWORD') ?: '';
+$root = getenv('MYSQL_ROOT_PASSWORD') ?: '';
+try {
+    $pdo = new PDO("mysql:host={$host};port={$port}", 'root', $root, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ]);
+    $dbIdent = str_replace('`', '``', $db);
+    $userIdent = str_replace("'", "''", $user);
+    $passSql = $pdo->quote($pass);
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbIdent}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+    $pdo->exec("CREATE USER IF NOT EXISTS '{$userIdent}'@'%' IDENTIFIED BY {$passSql}");
+    $pdo->exec("ALTER USER '{$userIdent}'@'%' IDENTIFIED BY {$passSql}");
+    $pdo->exec("GRANT ALL PRIVILEGES ON `{$dbIdent}`.* TO '{$userIdent}'@'%'");
+    $pdo->exec('FLUSH PRIVILEGES');
+    fwrite(STDOUT, "Synced MySQL grants for {$user}@%\n");
+} catch (Throwable $e) {
+    fwrite(STDERR, 'Grant sync failed: '.$e->getMessage()."\n");
+    exit(1);
+}
+PHP
 }
 
 already_installed() {
@@ -139,7 +183,27 @@ already_installed() {
     '
 }
 
-wait_for_mysql
+# Bind PORT immediately so Render health checks pass during first-boot.
+term() {
+    if [ -n "${SUPERVISOR_PID:-}" ]; then
+        kill -TERM "$SUPERVISOR_PID" 2>/dev/null || true
+        wait "$SUPERVISOR_PID" || true
+    fi
+    exit 0
+}
+trap term TERM INT
+/usr/bin/supervisord -c /etc/supervisor/conf.d/krayin.conf &
+SUPERVISOR_PID=$!
+
+if [ -n "${MYSQL_ROOT_PASSWORD:-}" ]; then
+    if wait_for_mysql_as root 15; then
+        sync_mysql_grants || echo "Grant sync failed; continuing as app user."
+    else
+        echo "Root MySQL login did not succeed; continuing as app user."
+    fi
+fi
+
+wait_for_mysql_as app
 
 if ! already_installed; then
     echo "First boot: equivalent of krayin-crm:install --skip-env-check --skip-admin-creation"
@@ -158,4 +222,5 @@ php artisan storage:link --force >/dev/null 2>&1 || true
 
 chown -R www-data:www-data storage bootstrap/cache
 
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/krayin.conf
+wait "$SUPERVISOR_PID"
+

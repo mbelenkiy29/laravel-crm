@@ -4,7 +4,9 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
-* [fixed] Render MySQL now re-applies the `krayin`@`%` grants on every start so the web service password matches after generateValue, and first-boot health checks `/up` instead of `/admin/login`.
+* [fixed] Render first-boot now binds `0.0.0.0:$PORT` and serves `/healthz` before migrations, and the web service re-applies MySQL grants as root so `krayin`@`%` matches generateValue passwords.
+
+* [fixed] Render MySQL now re-applies the `krayin`@`%` grants on every start so the web service password matches after generateValue, and first-boot health checks `/healthz` instead of `/admin/login`.
 
 * [fixed] First-boot on Render no longer cancels migrate:fresh in production or truncates generateValue database passwords. The entrypoint runs migrate:fresh --force and db:seed --force (skip-admin-creation equivalent) using process environment credentials.
 
