@@ -119,6 +119,7 @@ return [
                     'name' => 'Tên',
                     'description' => 'Mô tả',
                     'file' => 'Tệp',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'Lưu tệp',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'Tên Tệp',
                             'description' => 'Mô tả',
                             'file' => 'Tệp',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'Lưu Tệp',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'Tạo Khách Hàng Tiềm Năng',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'Nhân Viên Kinh Doanh',
+                'sales-person' => 'Rep',
                 'subject' => 'Chủ Đề',
                 'source' => 'Nguồn',
                 'lead-value' => 'Giá Trị Ước Tính Khách Hàng',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'Loại Khách Hàng',
                     'lead-value' => 'Giá Trị Ước Tính Khách Hàng',
-                    'sales-person' => 'Nhân Viên Kinh Doanh',
+                    'sales-person' => 'Rep',
                     'source' => 'Nguồn',
                     'title' => 'Tiêu Đề',
                     'tags' => 'Thẻ',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'Tải lên tệp',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'Tạo Khách Hàng Tiềm Năng',
             'save-btn' => 'Lưu',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'Thông Tin Về Người Liên Hệ',
             'products' => 'Sản Phẩm',
             'products-info' => 'Thông Tin Về Sản Phẩm',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'Chỉnh Sửa Khách Hàng Tiềm Năng',

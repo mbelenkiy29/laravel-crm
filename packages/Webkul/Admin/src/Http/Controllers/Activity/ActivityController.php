@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -17,6 +18,7 @@ use Webkul\Admin\Http\Requests\MassDestroyRequest;
 use Webkul\Admin\Http\Requests\MassUpdateRequest;
 use Webkul\Admin\Http\Resources\ActivityResource;
 use Webkul\Attribute\Repositories\AttributeRepository;
+use Webkul\Lead\Models\Lead;
 
 class ActivityController extends Controller
 {
@@ -85,6 +87,7 @@ class ActivityController extends Controller
             'schedule_from' => 'required_unless:type,note,file',
             'schedule_to' => 'required_unless:type,note,file',
             'file' => 'required_if:type,file',
+            'bucket' => ['nullable', Rule::in(array_keys(Lead::attachmentBuckets()))],
         ]);
 
         if (request('type') === 'meeting') {

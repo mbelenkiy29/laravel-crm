@@ -285,27 +285,14 @@
 
                 data() {
                     return {
-                        stages: [{
-                            'id': 'stage_1',
-                            'code': 'new', 
-                            'name': "@lang('admin::app.settings.pipelines.create.new-stage')",
-                            'probability': 100
-                        }, {
-                            'id': 'stage_2',
-                            'code': '',
-                            'name': '',
-                            'probability': 100
-                        }, {
-                            'id': 'stage_99',
-                            'code': 'won',
-                            'name': "@lang('admin::app.settings.pipelines.create.won-stage')",
-                            'probability': 100
-                        }, {
-                            'id': 'stage_100',
-                            'code': 'lost',
-                            'name': "@lang('admin::app.settings.pipelines.create.lost-stage')",
-                            'probability': 0
-                        }],
+                        stages: @json(collect(\Webkul\Lead\Models\Lead::pipelineStages())->map(function ($stage, $index) {
+                            return [
+                                'id' => 'stage_'.($index + 1),
+                                'code' => $stage['code'],
+                                'name' => $stage['name'],
+                                'probability' => $stage['probability'],
+                            ];
+                        })->values()),
 
                         stageCount: 3,
 
@@ -353,10 +340,6 @@
                     },
 
                     isDragable (stage) {
-                        if (stage.code == 'new' || stage.code == 'won' || stage.code == 'lost') {
-                            return false;
-                        }
-
                         return true;
                     },
 

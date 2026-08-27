@@ -215,6 +215,9 @@
 
                                                 <span class="font-medium text-brandColor">
                                                     @{{ file.name }}
+                                                    <template v-if="file.bucket">
+                                                        (@{{ file.bucket }})
+                                                    </template>
                                                 </span>
                                             </a>
                                         </div>

@@ -119,6 +119,7 @@ return [
                     'name' => '名称',
                     'description' => '描述',
                     'file' => '文件',
+                    'bucket' => 'Bucket',
                     'save-btn' => '保存文件',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => '文件名称',
                             'description' => '描述',
                             'file' => '文件',
+                    'bucket' => 'Bucket',
                             'save-btn' => '保存文件',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => '创建线索',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => '销售人员',
+                'sales-person' => 'Rep',
                 'subject' => '主题',
                 'source' => '来源',
                 'lead-value' => '预估线索价值',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => '线索类型',
                     'lead-value' => '预估线索价值',
-                    'sales-person' => '销售人员',
+                    'sales-person' => 'Rep',
                     'source' => '来源',
                     'title' => '标题',
                     'tags' => '标签',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => '上传文件',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => '创建线索',
             'save-btn' => '保存',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => '关于联系人的信息',
             'products' => '产品',
             'products-info' => '关于产品的信息',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => '编辑线索',

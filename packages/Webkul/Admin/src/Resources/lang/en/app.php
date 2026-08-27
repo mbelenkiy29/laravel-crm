@@ -119,6 +119,7 @@ return [
                     'name' => 'Name',
                     'description' => 'Description',
                     'file' => 'File',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'Save File',
                 ],
                 'note' => [
@@ -563,6 +564,7 @@ return [
                             'name' => 'File Name',
                             'description' => 'Description',
                             'file' => 'File',
+                            'bucket' => 'Bucket',
                             'save-btn' => 'Save File',
                         ],
                         'note' => [
@@ -1847,7 +1849,7 @@ return [
             'create-btn' => 'Create Lead',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'Sales Person',
+                'sales-person' => 'Rep',
                 'subject' => 'Subject',
                 'source' => 'Source',
                 'lead-value' => 'Estimated Lead Value',
@@ -1874,7 +1876,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'Lead Type',
                     'lead-value' => 'Estimated Lead Value',
-                    'sales-person' => 'Sales Person',
+                    'sales-person' => 'Rep',
                     'source' => 'Source',
                     'title' => 'Title',
                     'tags' => 'Tags',
@@ -1919,6 +1921,14 @@ return [
                 'upload-file' => 'Upload File',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'Create Lead',
             'save-btn' => 'Save',
@@ -1928,6 +1938,10 @@ return [
             'contact-info' => 'Information About the Contact Person',
             'products' => 'Products',
             'products-info' => 'Information About the Products',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'Edit Lead',

@@ -111,7 +111,7 @@
                             </x-admin::form.control-group>
 
                             <!-- File -->
-                            <x-admin::form.control-group class="!mb-0">
+                            <x-admin::form.control-group>
                                 <x-admin::form.control-group.label class="required">
                                     @lang('admin::app.components.activities.actions.file.file')
                                 </x-admin::form.control-group.label>
@@ -125,6 +125,28 @@
                                 />
 
                                 <x-admin::form.control-group.error control-name="file" />
+                            </x-admin::form.control-group>
+
+                            <!-- Attachment bucket -->
+                            <x-admin::form.control-group class="!mb-0">
+                                <x-admin::form.control-group.label>
+                                    @lang('admin::app.components.activities.actions.file.bucket')
+                                </x-admin::form.control-group.label>
+
+                                <x-admin::form.control-group.control
+                                    type="select"
+                                    name="bucket"
+                                    :value="'bank_statements'"
+                                >
+                                    @foreach (\Webkul\Lead\Models\Lead::attachmentBuckets() as $code => $label)
+                                        <option
+                                            value="{{ $code }}"
+                                            @selected($code === 'bank_statements')
+                                        >
+                                            @lang('admin::app.leads.attachment-buckets.'.$code)
+                                        </option>
+                                    @endforeach
+                                </x-admin::form.control-group.control>
                             </x-admin::form.control-group>
 
                             {!! view_render_event('admin.components.activities.actions.file.form_controls.modal.content.controls.after') !!}

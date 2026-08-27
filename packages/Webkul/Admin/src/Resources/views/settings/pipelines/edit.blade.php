@@ -376,10 +376,6 @@
                     },
 
                     isDragable (stage) {
-                        if (stage.code == 'new' || stage.code == 'won' || stage.code == 'lost') {
-                            return false;
-                        }
-
                         return true;
                     },
                 },

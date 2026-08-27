@@ -4,6 +4,8 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
+* [feature] Broker leads now use documented pipeline stages, business identity attributes, attachment buckets, and a Rep assignment.
+
 * [fixed] Admin Vite assets stay https on Render even when APP_URL is http, so the login form is not mixed content.
 
 * [fixed] Admin Vite assets and app URLs now use https on Render so the login page is not mixed content.

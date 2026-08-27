@@ -119,6 +119,7 @@ return [
                     'name' => 'نام',
                     'description' => 'توضیحات',
                     'file' => 'فایل',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'ذخیره فایل',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'نام فایل',
                             'description' => 'توضیحات',
                             'file' => 'فایل',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'ذخیره فایل',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'ایجاد سرنخ',
             'datagrid' => [
                 'id' => 'شناسه',
-                'sales-person' => 'کارشناس فروش',
+                'sales-person' => 'Rep',
                 'subject' => 'موضوع',
                 'source' => 'منبع',
                 'lead-value' => 'ارزش تخمینی سرنخ',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'شناسه',
                     'lead-type' => 'نوع سرنخ',
                     'lead-value' => 'ارزش تخمینی سرنخ',
-                    'sales-person' => 'کارشناس فروش',
+                    'sales-person' => 'Rep',
                     'source' => 'منبع',
                     'title' => 'عنوان',
                     'tags' => 'برچسب‌ها',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'بارگذاری فایل',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'ایجاد سرنخ',
             'save-btn' => 'ذخیره',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'اطلاعات درباره شخص تماس',
             'products' => 'محصولات',
             'products-info' => 'اطلاعات درباره محصولات',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'ویرایش سرنخ',

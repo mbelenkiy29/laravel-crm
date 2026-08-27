@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Webkul\Activity\Repositories\ActivityRepository;
 use Webkul\Admin\DataGrids\Lead\LeadDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\LeadForm;
@@ -22,6 +23,7 @@ use Webkul\Contact\Repositories\PersonRepository;
 use Webkul\DataGrid\ColumnTypes\Date as DateColumn;
 use Webkul\DataGrid\Enums\DateRangeOptionEnum;
 use Webkul\Lead\Helpers\MagicAI;
+use Webkul\Lead\Models\Lead;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Lead\Repositories\PipelineRepository;
 use Webkul\Lead\Repositories\ProductRepository;
@@ -158,7 +160,15 @@ class LeadController extends Controller
         $attributes = $this->attributeRepository
             ->where('entity_type', 'leads')
             ->where(function ($query) {
-                $query->whereIn('code', ['description', 'title', 'lead_value', 'lead_type_id', 'lead_source_id', 'expected_close_date', 'user_id'])
+                $query->whereIn('code', array_merge([
+                    'description',
+                    'title',
+                    'lead_value',
+                    'lead_type_id',
+                    'lead_source_id',
+                    'expected_close_date',
+                    'user_id',
+                ], Lead::IDENTITY_ATTRIBUTE_CODES))
                     ->orWhere('is_user_defined', 1);
             })
             ->orderBy('sort_order', 'asc')
@@ -195,16 +205,18 @@ class LeadController extends Controller
                 $pipeline = $this->pipelineRepository->findOrFail($data['lead_pipeline_id']);
             }
 
-            $stage = $pipeline->stages()->first();
+            $stage = Lead::defaultStageForPipeline($pipeline);
 
             $data['lead_pipeline_stage_id'] = $stage->id;
         }
 
-        if (in_array($stage->code, ['won', 'lost'])) {
+        if (Lead::isTerminalStageCode($stage->code)) {
             $data['closed_at'] = Carbon::now();
         }
 
         $lead = $this->leadRepository->create($data);
+
+        $this->storeLeadAttachments($lead, $data['attachments'] ?? []);
 
         if (request()->ajax()) {
             return response()->json([
@@ -232,7 +244,15 @@ class LeadController extends Controller
         $attributes = $this->attributeRepository
             ->where('entity_type', 'leads')
             ->where(function ($query) {
-                $query->whereIn('code', ['description', 'title', 'lead_value', 'lead_type_id', 'lead_source_id', 'expected_close_date', 'user_id'])
+                $query->whereIn('code', array_merge([
+                    'description',
+                    'title',
+                    'lead_value',
+                    'lead_type_id',
+                    'lead_source_id',
+                    'expected_close_date',
+                    'user_id',
+                ], Lead::IDENTITY_ATTRIBUTE_CODES))
                     ->orWhere('is_user_defined', 1);
             })
             ->orderBy('sort_order', 'asc')
@@ -282,7 +302,7 @@ class LeadController extends Controller
         } else {
             $pipeline = $this->pipelineRepository->getDefaultPipeline();
 
-            $stage = $pipeline->stages()->first();
+            $stage = Lead::defaultStageForPipeline($pipeline);
 
             $data['lead_pipeline_id'] = $pipeline->id;
 
@@ -290,6 +310,8 @@ class LeadController extends Controller
         }
 
         $lead = $this->leadRepository->update($data, $id);
+
+        $this->storeLeadAttachments($lead, $data['attachments'] ?? []);
 
         Event::dispatch('lead.update.after', $lead);
 
@@ -831,7 +853,7 @@ class LeadController extends Controller
 
             $pipeline = $this->pipelineRepository->getDefaultPipeline();
 
-            $stage = $pipeline->stages()->first();
+            $stage = Lead::defaultStageForPipeline($pipeline);
 
             $lead = $this->leadRepository->create(array_merge($rawLead, [
                 'lead_pipeline_id' => $pipeline->id,
@@ -844,5 +866,37 @@ class LeadController extends Controller
         }
 
         return $leads;
+    }
+
+    /**
+     * Store uploaded files against the lead, tagged with an attachment bucket.
+     */
+    protected function storeLeadAttachments($lead, array $attachments): void
+    {
+        $buckets = array_keys(Lead::attachmentBuckets());
+
+        foreach ($attachments as $attachment) {
+            if (empty($attachment['file'])) {
+                continue;
+            }
+
+            $bucket = $attachment['bucket'] ?? 'other';
+
+            if (! in_array($bucket, $buckets, true)) {
+                $bucket = 'other';
+            }
+
+            $activity = app(ActivityRepository::class)->create([
+                'type' => 'file',
+                'title' => $attachment['name'] ?? $attachment['file']->getClientOriginalName(),
+                'name' => $attachment['name'] ?? $attachment['file']->getClientOriginalName(),
+                'file' => $attachment['file'],
+                'bucket' => $bucket,
+                'is_done' => 1,
+                'user_id' => auth()->guard('user')->id(),
+            ]);
+
+            $lead->activities()->attach($activity->id);
+        }
     }
 }

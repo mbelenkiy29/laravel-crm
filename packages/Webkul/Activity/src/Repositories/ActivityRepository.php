@@ -30,6 +30,7 @@ class ActivityRepository extends Repository
             app(FileRepository::class)->create([
                 'name' => $data['name'] ?? $data['file']->getClientOriginalName(),
                 'path' => $data['file']->store('activities/'.$activity->id),
+                'bucket' => $data['bucket'] ?? null,
                 'activity_id' => $activity->id,
             ]);
         }

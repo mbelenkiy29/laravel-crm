@@ -6,7 +6,10 @@
     {!! view_render_event('admin.leads.create.form.before') !!}
 
     <!-- Create Lead Form -->
-    <x-admin::form :action="route('admin.leads.store')">
+    <x-admin::form
+        :action="route('admin.leads.store')"
+        enctype="multipart/form-data"
+    >
         <div class="flex flex-col gap-4">
             <div class="scroll-reactive-sticky sticky top-[60px] z-[1000] flex items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
                 <div class="flex flex-col gap-2">
@@ -188,6 +191,12 @@
                     </div>
 
                     {!! view_render_event('admin.leads.create.products.form_controls.after') !!}
+
+                    {!! view_render_event('admin.leads.create.attachments.before') !!}
+
+                    @include('admin::leads.common.attachments')
+
+                    {!! view_render_event('admin.leads.create.attachments.after') !!}
                 </div>
 
                 {!! view_render_event('admin.leads.form_controls.after') !!}
@@ -205,7 +214,8 @@
                         tabs: [
                             { id: 'lead-details', label: "@lang('admin::app.leads.create.details')" },
                             { id: 'contact-person', label: "@lang('admin::app.leads.create.contact-person')" },
-                            { id: 'products', label: "@lang('admin::app.leads.create.products')" }
+                            { id: 'products', label: "@lang('admin::app.leads.create.products')" },
+                            { id: 'attachments', label: "@lang('admin::app.leads.create.attachments')" }
                         ],
                     };
                 },
