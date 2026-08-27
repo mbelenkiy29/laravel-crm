@@ -119,6 +119,7 @@ return [
                     'name' => 'Nombre',
                     'description' => 'Descripción',
                     'file' => 'Archivo',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'Guardar archivo',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'Nombre del Archivo',
                             'description' => 'Descripción',
                             'file' => 'Archivo',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'Guardar Archivo',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'Crear Lead',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'Persona de Ventas',
+                'sales-person' => 'Rep',
                 'subject' => 'Asunto',
                 'source' => 'Fuente',
                 'lead-value' => 'Valor Estimado del Lead',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'Tipo de Lead',
                     'lead-value' => 'Valor Estimado del Lead',
-                    'sales-person' => 'Persona de Ventas',
+                    'sales-person' => 'Rep',
                     'source' => 'Fuente',
                     'title' => 'Título',
                     'tags' => 'Etiquetas',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'Subir archivo',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'Crear Lead',
             'save-btn' => 'Guardar',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'Información Sobre la Persona de Contacto',
             'products' => 'Productos',
             'products-info' => 'Información Sobre los Productos',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'Editar Lead',

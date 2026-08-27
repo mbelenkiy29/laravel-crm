@@ -12,6 +12,7 @@ use Webkul\Attribute\Repositories\AttributeValueRepository;
 use Webkul\Contact\Repositories\PersonRepository;
 use Webkul\Core\Eloquent\Repository;
 use Webkul\Lead\Contracts\Lead;
+use Webkul\Lead\Models\Lead as LeadModel;
 
 class LeadRepository extends Repository
 {
@@ -138,10 +139,16 @@ class LeadRepository extends Repository
             $data['expected_close_date'] = null;
         }
 
-        $lead = parent::create(array_merge([
-            'lead_pipeline_id' => 1,
-            'lead_pipeline_stage_id' => 1,
-        ], $data));
+        if (empty($data['lead_pipeline_stage_id'])) {
+            $pipeline = app(PipelineRepository::class)->getDefaultPipeline();
+
+            $stage = LeadModel::defaultStageForPipeline($pipeline);
+
+            $data['lead_pipeline_id'] = $data['lead_pipeline_id'] ?? $pipeline?->id;
+            $data['lead_pipeline_stage_id'] = $stage?->id;
+        }
+
+        $lead = parent::create($data);
 
         $this->attributeValueRepository->save(array_merge($data, [
             'entity_id' => $lead->id,
@@ -194,7 +201,7 @@ class LeadRepository extends Repository
         if (isset($data['lead_pipeline_stage_id'])) {
             $stage = $this->stageRepository->find($data['lead_pipeline_stage_id']);
 
-            if (in_array($stage->code, ['won', 'lost'])) {
+            if (LeadModel::isTerminalStageCode($stage->code)) {
                 $data['closed_at'] = $data['closed_at'] ?? Carbon::now();
             } else {
                 $data['closed_at'] = null;

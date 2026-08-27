@@ -23,9 +23,9 @@
                     class="stage relative flex h-7 cursor-pointer items-center justify-center bg-white pl-7 pr-4 dark:bg-gray-900 ltr:first:rounded-l-lg rtl:first:rounded-r-lg"
                     :class="{
                         '!bg-green-500 text-white dark:text-gray-900 ltr:after:bg-green-500 rtl:before:bg-green-500': currentStage.sort_order >= stage.sort_order,
-                        '!bg-red-500 text-white dark:text-gray-900 ltr:after:bg-red-500 rtl:before:bg-red-500': currentStage.code == 'lost',
+                        '!bg-red-500 text-white dark:text-gray-900 ltr:after:bg-red-500 rtl:before:bg-red-500': isClosedStage(currentStage.code),
                     }"
-                    v-if="! ['won', 'lost'].includes(stage.code)"
+                    v-if="! isTerminalStage(stage.code)"
                     @click="update(stage)"
                 >
                     <span class="z-20 whitespace-nowrap text-sm font-medium dark:text-white">
@@ -46,13 +46,13 @@
                     <div
                         class="relative flex h-7 min-w-24 cursor-pointer items-center justify-center rounded-r-lg bg-white pl-7 pr-4 dark:bg-gray-900"
                         :class="{
-                            '!bg-green-500 text-white dark:text-gray-900 after:bg-green-500': ['won', 'lost'].includes(currentStage.code) && currentStage.code == 'won',
-                            '!bg-red-500 text-white dark:text-gray-900 after:bg-red-500': ['won', 'lost'].includes(currentStage.code) && currentStage.code == 'lost',
+                            '!bg-green-500 text-white dark:text-gray-900 after:bg-green-500': isFundedStage(currentStage.code),
+                            '!bg-red-500 text-white dark:text-gray-900 after:bg-red-500': isClosedStage(currentStage.code),
                         }"
                         @click="stageToggler = ! stageToggler"
                     >
                         <span class="z-20 whitespace-nowrap text-sm font-medium dark:text-white">
-                             @{{ stages.filter(stage => ['won', 'lost'].includes(stage.code)).map(stage => stage.name).join('/') }}
+                             @{{ terminalStages.map(stage => stage.name).join('/') }}
                         </span>
 
                         <span
@@ -68,7 +68,7 @@
                     {!! view_render_event('admin.leads.view.stages.items.dropdown.menu_item.before', ['lead' => $lead]) !!}
 
                     <x-admin::dropdown.menu.item
-                        v-for="stage in stages.filter(stage => ['won', 'lost'].includes(stage.code))"
+                        v-for="stage in terminalStages"
                         @click="openModal(stage)"
                     >
                         @{{ stage.name }}
@@ -105,7 +105,7 @@
                             {!! view_render_event('admin.leads.view.stages.form_controls.modal.content.before', ['lead' => $lead]) !!}
 
                             <!-- Won Value -->
-                            <template v-if="nextStage.code == 'won'">
+                            <template v-if="nextStage && isFundedStage(nextStage.code)">
                                 <x-admin::form.control-group>
                                     <x-admin::form.control-group.label>
                                         @lang('admin::app.leads.view.stages.won-value')
@@ -190,11 +190,33 @@
 
                     stages: @json($lead->pipeline->stages),
 
+                    fundedStageCodes: @json(\Webkul\Lead\Models\Lead::fundedStageCodes()),
+
+                    closedStageCodes: @json(\Webkul\Lead\Models\Lead::closedStageCodes()),
+
                     stageToggler: '',
                 }
             },
 
+            computed: {
+                terminalStages() {
+                    return this.stages.filter(stage => this.isTerminalStage(stage.code));
+                },
+            },
+
             methods: {
+                isFundedStage(code) {
+                    return this.fundedStageCodes.includes(code);
+                },
+
+                isClosedStage(code) {
+                    return this.closedStageCodes.includes(code);
+                },
+
+                isTerminalStage(code) {
+                    return this.isFundedStage(code) || this.isClosedStage(code);
+                },
+
                 openModal(stage) {
                     if (this.currentStage.code == stage.code) {
                         return;
@@ -210,11 +232,11 @@
                         'lead_pipeline_stage_id': this.nextStage.id
                     };
 
-                    if (this.nextStage.code == 'won') {
+                    if (this.isFundedStage(this.nextStage.code)) {
                         params.lead_value = this.nextStage.lead_value;
 
                         params.closed_at = this.nextStage.closed_at;
-                    } else if (this.nextStage.code == 'lost') {
+                    } else if (this.isClosedStage(this.nextStage.code)) {
                         params.lost_reason = this.nextStage.lost_reason;
 
                         params.closed_at = this.nextStage.closed_at;

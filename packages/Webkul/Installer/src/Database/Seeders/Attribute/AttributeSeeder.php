@@ -111,6 +111,90 @@ class AttributeSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ], [
+                'code' => 'ein',
+                'name' => trans('installer::app.seeders.attributes.leads.ein', [], $defaultLocale),
+                'type' => 'text',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => null,
+                'sort_order' => '11',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'code' => 'dba',
+                'name' => trans('installer::app.seeders.attributes.leads.dba', [], $defaultLocale),
+                'type' => 'text',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => null,
+                'sort_order' => '12',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'code' => 'revenue',
+                'name' => trans('installer::app.seeders.attributes.leads.revenue', [], $defaultLocale),
+                'type' => 'price',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => 'decimal',
+                'sort_order' => '13',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'code' => 'fico',
+                'name' => trans('installer::app.seeders.attributes.leads.fico', [], $defaultLocale),
+                'type' => 'text',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => 'numeric',
+                'sort_order' => '14',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'code' => 'requested_amount',
+                'name' => trans('installer::app.seeders.attributes.leads.requested-amount', [], $defaultLocale),
+                'type' => 'price',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => 'decimal',
+                'sort_order' => '15',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'code' => 'default_status',
+                'name' => trans('installer::app.seeders.attributes.leads.default-status', [], $defaultLocale),
+                'type' => 'select',
+                'entity_type' => 'leads',
+                'lookup_type' => null,
+                'validation' => null,
+                'sort_order' => '16',
+                'is_required' => '0',
+                'is_unique' => '0',
+                'quick_add' => '0',
+                'is_user_defined' => '0',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
                 'code' => 'expected_close_date',
                 'name' => trans('installer::app.seeders.attributes.leads.expected-close-date', [], $defaultLocale),
                 'type' => 'date',
@@ -639,6 +723,41 @@ class AttributeSeeder extends Seeder
                 'is_user_defined' => '0',
                 'created_at' => $now,
                 'updated_at' => $now,
+            ],
+        ]);
+
+        $this->seedLeadDefaultStatusOptions($defaultLocale);
+    }
+
+    /**
+     * Seed the default-status select options for leads.
+     */
+    protected function seedLeadDefaultStatusOptions(string $defaultLocale): void
+    {
+        $attributeId = DB::table('attributes')
+            ->where('code', 'default_status')
+            ->where('entity_type', 'leads')
+            ->value('id');
+
+        if (! $attributeId) {
+            return;
+        }
+
+        DB::table('attribute_options')->where('attribute_id', $attributeId)->delete();
+
+        DB::table('attribute_options')->insert([
+            [
+                'name' => trans('installer::app.seeders.attributes.leads.default-status-options.clean-file', [], $defaultLocale),
+                'sort_order' => 1,
+                'attribute_id' => $attributeId,
+            ], [
+                'name' => trans('installer::app.seeders.attributes.leads.default-status-options.satisfied-default', [], $defaultLocale),
+                'sort_order' => 2,
+                'attribute_id' => $attributeId,
+            ], [
+                'name' => trans('installer::app.seeders.attributes.leads.default-status-options.open-default', [], $defaultLocale),
+                'sort_order' => 3,
+                'attribute_id' => $attributeId,
             ],
         ]);
     }

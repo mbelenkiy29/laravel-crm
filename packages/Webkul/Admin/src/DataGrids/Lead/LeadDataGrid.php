@@ -10,6 +10,7 @@ use Webkul\Attribute\Models\AttributeValue;
 use Webkul\Contact\Repositories\PersonRepository;
 use Webkul\Contract\Repositories\Pipeline;
 use Webkul\DataGrid\DataGrid;
+use Webkul\Lead\Models\Lead;
 use Webkul\Lead\Repositories\PipelineRepository;
 use Webkul\Lead\Repositories\SourceRepository;
 use Webkul\Lead\Repositories\StageRepository;
@@ -272,7 +273,7 @@ class LeadDataGrid extends DataGrid
                     return trans('admin::app.leads.index.datagrid.no');
                 }
 
-                if (in_array($row->stage_code, ['won', 'lost'])) {
+                if (Lead::isTerminalStageCode($row->stage_code)) {
                     return trans('admin::app.leads.index.datagrid.no');
                 }
 

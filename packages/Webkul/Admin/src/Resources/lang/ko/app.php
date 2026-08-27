@@ -119,6 +119,7 @@ return [
                     'name' => '이름',
                     'description' => '설명',
                     'file' => '파일',
+                    'bucket' => 'Bucket',
                     'save-btn' => '파일 저장',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => '파일명',
                             'description' => '설명',
                             'file' => '파일',
+                    'bucket' => 'Bucket',
                             'save-btn' => '파일 저장',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => '리드 생성',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => '영업 담당자',
+                'sales-person' => 'Rep',
                 'subject' => '제목',
                 'source' => '소스',
                 'lead-value' => '예상 리드 금액',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => '리드 유형',
                     'lead-value' => '예상 리드 금액',
-                    'sales-person' => '영업 담당자',
+                    'sales-person' => 'Rep',
                     'source' => '소스',
                     'title' => '제목',
                     'tags' => '태그',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => '파일 업로드',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => '리드 생성',
             'save-btn' => '저장',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => '담당자에 대한 정보',
             'products' => '제품',
             'products-info' => '제품에 대한 정보',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => '리드 수정',

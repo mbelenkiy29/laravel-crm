@@ -30,6 +30,7 @@ class File extends Model implements FileContract
     protected $fillable = [
         'name',
         'path',
+        'bucket',
         'activity_id',
     ];
 

@@ -4,6 +4,7 @@ namespace Webkul\Admin\Helpers\Reporting;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Webkul\Lead\Models\Lead as LeadModel;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Lead\Repositories\PipelineRepository;
 use Webkul\Lead\Repositories\StageRepository;
@@ -57,9 +58,9 @@ class Lead extends AbstractReporting
 
         $this->allStageIds = $stages->pluck('id')->toArray();
 
-        $this->wonStageIds = $stages->where('code', 'won')->pluck('id')->toArray();
+        $this->wonStageIds = $stages->filter(fn ($stage) => LeadModel::isFundedStageCode($stage->code))->pluck('id')->toArray();
 
-        $this->lostStageIds = $stages->where('code', 'lost')->pluck('id')->toArray();
+        $this->lostStageIds = $stages->filter(fn ($stage) => LeadModel::isClosedStageCode($stage->code))->pluck('id')->toArray();
 
         parent::__construct();
     }

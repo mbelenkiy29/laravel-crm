@@ -3,9 +3,11 @@
 namespace Webkul\Admin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Attribute\Repositories\AttributeValueRepository;
 use Webkul\Core\Contracts\Validations\Decimal;
+use Webkul\Lead\Models\Lead;
 
 class LeadForm extends FormRequest
 {
@@ -134,6 +136,9 @@ class LeadForm extends FormRequest
             'products.*.name' => 'required_with:products.*.product_id',
             'products.*.price' => 'required_with:products.*.product_id',
             'products.*.quantity' => 'required_with:products.*.product_id',
+            'attachments' => 'nullable|array',
+            'attachments.*.file' => 'nullable|file|mimes:pdf',
+            'attachments.*.bucket' => ['nullable', Rule::in(array_keys(Lead::attachmentBuckets()))],
         ];
     }
 

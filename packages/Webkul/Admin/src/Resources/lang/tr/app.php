@@ -119,6 +119,7 @@ return [
                     'name' => 'Name',
                     'description' => 'Description',
                     'file' => 'File',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'Save File',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'Dosya Adı',
                             'description' => 'Açıklama',
                             'file' => 'Dosya',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'Dosyayı Kaydet',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'Lead Oluştur',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'Satış Temsilcisi',
+                'sales-person' => 'Rep',
                 'subject' => 'Konu',
                 'source' => 'Kaynak',
                 'lead-value' => 'Tahmini Lead Değeri',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'Lead Türü',
                     'lead-value' => 'Tahmini Lead Değeri',
-                    'sales-person' => 'Satış Temsilcisi',
+                    'sales-person' => 'Rep',
                     'source' => 'Kaynak',
                     'title' => 'Başlık',
                     'tags' => 'Etiketler',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'Dosya yükle',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'Lead Oluştur',
             'save-btn' => 'Kaydet',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'İletişim Kişisi Hakkında Bilgiler',
             'products' => 'Ürünler',
             'products-info' => 'Ürünler Hakkında Bilgiler',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'Lead\'i Düzenle',

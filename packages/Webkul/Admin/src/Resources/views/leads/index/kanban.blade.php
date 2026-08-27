@@ -27,11 +27,23 @@
 
                 {!! view_render_event('admin.leads.index.kanban.content.before') !!}
 
-                <div class="flex gap-2.5 overflow-x-auto max-h-[calc(100vh-300px)]">
+                <div class="flex gap-4 overflow-x-auto max-h-[calc(100vh-300px)]">
+                    <!-- Kanban groups (display only; stages remain the documented enum) -->
+                    <div
+                        class="flex flex-col gap-1"
+                        v-for="group in groupedStageLeads"
+                        :key="group.code"
+                    >
+                        <span class="px-2 text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">
+                            @{{ group.label }}
+                        </span>
+
+                        <div class="flex gap-2.5">
                     <!-- Stage Cards -->
                     <div
                         class="flex min-w-[275px] max-w-[275px] flex-col gap-1 rounded-lg border border-gray-300 bg-white dark:border-gray-800 dark:bg-gray-900"
-                        v-for="(stage, index) in stageLeads"
+                        v-for="(stage, index) in group.stages"
+                        :key="stage.id"
                     >
                         {!! view_render_event('admin.leads.index.kanban.content.stage.header.before') !!}
 
@@ -225,6 +237,8 @@
 
                         {!! view_render_event('admin.leads.index.kanban.content.stage.body.after') !!}
                     </div>
+                        </div>
+                    </div>
                 </div>
 
                 {!! view_render_event('admin.leads.index.kanban.content.after') !!}
@@ -258,7 +272,7 @@
                             />
 
                             <!-- Won Value -->
-                            <template v-if="finalized.stage.code == 'won'">
+                            <template v-if="isFundedStage(finalized.stage.code)">
                                 <x-admin::form.control-group>
                                     <x-admin::form.control-group.label>
                                         @lang('admin::app.leads.index.kanban.stages.won-value')
@@ -341,6 +355,10 @@
 
                     stages: @json($pipeline->stages->toArray()),
 
+                    fundedStageCodes: @json(\Webkul\Lead\Models\Lead::fundedStageCodes()),
+
+                    closedStageCodes: @json(\Webkul\Lead\Models\Lead::closedStageCodes()),
+
                     stageLeads: {},
 
                     isLoading: true,
@@ -372,6 +390,51 @@
                     }
 
                     return totalAmount;
+                },
+
+                /**
+                 * Groups pipeline stages for kanban display. Stage codes stay the documented enum.
+                 *
+                 * @return {array}
+                 */
+                groupedStageLeads() {
+                    const groupOrder = ['lead', 'new', 'submitted', 'offers', 'contracts', 'funded', 'closed'];
+                    const groups = {};
+
+                    Object.values(this.stageLeads).forEach(stage => {
+                        const key = stage.kanban_group || `stage-${stage.id}`;
+
+                        if (! groups[key]) {
+                            groups[key] = {
+                                code: key,
+                                label: stage.kanban_group_label || stage.name,
+                                stages: [],
+                            };
+                        }
+
+                        groups[key].stages.push(stage);
+                    });
+
+                    Object.values(groups).forEach(group => {
+                        group.stages.sort((a, b) => {
+                            const left = a.kanban_group_sort ?? a.sort_order ?? 0;
+                            const right = b.kanban_group_sort ?? b.sort_order ?? 0;
+
+                            return left - right;
+                        });
+                    });
+
+                    const ordered = [];
+
+                    groupOrder.forEach(code => {
+                        if (groups[code]) {
+                            ordered.push(groups[code]);
+
+                            delete groups[code];
+                        }
+                    });
+
+                    return ordered.concat(Object.values(groups));
                 }
             },
 
@@ -561,13 +624,25 @@
                  * @param {object} event - The event object.
                  * @returns {void}
                  */
+                isFundedStage(code) {
+                    return this.fundedStageCodes.includes(code);
+                },
+
+                isClosedStage(code) {
+                    return this.closedStageCodes.includes(code);
+                },
+
+                isTerminalStage(code) {
+                    return this.isFundedStage(code) || this.isClosedStage(code);
+                },
+
                 handleUpdate(stage, event) {
                     if (event.moved) {
                         return;
                     }
 
                     if (
-                        (stage.code === "won" || stage.code === "lost")
+                        this.isTerminalStage(stage.code)
                         && event.added
                         && event.added.element
                     ) {

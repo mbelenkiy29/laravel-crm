@@ -10,6 +10,7 @@
     <x-admin::form         
         :action="route('admin.leads.update', $lead->id)"
         method="PUT"
+        enctype="multipart/form-data"
     >
         <div class="flex flex-col gap-4">
             <div class="scroll-reactive-sticky sticky top-[60px] z-[1000] flex items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300">
@@ -173,6 +174,12 @@
                     </div>
 
                     {!! view_render_event('admin.leads.edit.contact_person.products.after', ['lead' => $lead]) !!}
+
+                    {!! view_render_event('admin.leads.edit.attachments.before', ['lead' => $lead]) !!}
+
+                    @include('admin::leads.common.attachments')
+
+                    {!! view_render_event('admin.leads.edit.attachments.after', ['lead' => $lead]) !!}
                 </div>
                 
                 {!! view_render_event('admin.leads.form_controls.after') !!}
@@ -194,7 +201,8 @@
                         tabs: [
                             { id: 'lead-details', label: "@lang('admin::app.leads.edit.details')" },
                             { id: 'contact-person', label: "@lang('admin::app.leads.edit.contact-person')" },
-                            { id: 'products', label: "@lang('admin::app.leads.edit.products')" }
+                            { id: 'products', label: "@lang('admin::app.leads.edit.products')" },
+                            { id: 'attachments', label: "@lang('admin::app.leads.create.attachments')" }
                         ],
                     };
                 },

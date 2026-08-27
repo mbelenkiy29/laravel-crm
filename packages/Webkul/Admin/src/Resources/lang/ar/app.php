@@ -119,6 +119,7 @@ return [
                     'name' => 'اسم',
                     'description' => 'وصف',
                     'file' => 'ملف',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'حفظ الملف',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'اسم الملف',
                             'description' => 'الوصف',
                             'file' => 'الملف',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'حفظ الملف',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'إنشاء عميل محتمل',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'مندوب المبيعات',
+                'sales-person' => 'Rep',
                 'subject' => 'الموضوع',
                 'source' => 'المصدر',
                 'lead-value' => 'القيمة التقديرية للعميل المحتمل',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'نوع العميل المحتمل',
                     'lead-value' => 'القيمة التقديرية للعميل المحتمل',
-                    'sales-person' => 'مندوب المبيعات',
+                    'sales-person' => 'Rep',
                     'source' => 'المصدر',
                     'title' => 'العنوان',
                     'tags' => 'العلامات',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'رفع الملف',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'إنشاء عميل محتمل',
             'save-btn' => 'حفظ',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'معلومات عن شخص الاتصال',
             'products' => 'المنتجات',
             'products-info' => 'معلومات عن المنتجات',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'تعديل العميل المحتمل',

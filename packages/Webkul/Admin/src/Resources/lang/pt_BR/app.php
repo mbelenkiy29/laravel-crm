@@ -119,6 +119,7 @@ return [
                     'name' => 'Nome',
                     'description' => 'Descrição',
                     'file' => 'Arquivo',
+                    'bucket' => 'Bucket',
                     'save-btn' => 'Salvar Arquivo',
                 ],
                 'note' => [
@@ -562,6 +563,7 @@ return [
                             'name' => 'Nome do Arquivo',
                             'description' => 'Descrição',
                             'file' => 'Arquivo',
+                    'bucket' => 'Bucket',
                             'save-btn' => 'Salvar Arquivo',
                         ],
                         'note' => [
@@ -1845,7 +1847,7 @@ return [
             'create-btn' => 'Adicionar Negócio',
             'datagrid' => [
                 'id' => 'ID',
-                'sales-person' => 'Vendedor',
+                'sales-person' => 'Rep',
                 'subject' => 'Assunto',
                 'source' => 'Origem',
                 'lead-value' => 'Valor Estimado do Negócio',
@@ -1872,7 +1874,7 @@ return [
                     'id' => 'ID',
                     'lead-type' => 'Tipo de Negócio',
                     'lead-value' => 'Valor Estimado do Negócio',
-                    'sales-person' => 'Vendedor',
+                    'sales-person' => 'Rep',
                     'source' => 'Origem',
                     'title' => 'Título',
                     'tags' => 'Tags',
@@ -1917,6 +1919,14 @@ return [
                 'upload-file' => 'Enviar arquivo',
             ],
         ],
+        'attachment-buckets' => [
+            'bank_statements' => 'Bank statements',
+            'application' => 'Application',
+            'more_stips' => 'More stips',
+            'dl_vc' => 'DL/VC',
+            'closing' => 'Closing',
+            'other' => 'Other',
+        ],
         'create' => [
             'title' => 'Adicionar Negócio',
             'save-btn' => 'Salvar',
@@ -1926,6 +1936,10 @@ return [
             'contact-info' => 'Informações sobre a Pessoa de Contato',
             'products' => 'Produtos',
             'products-info' => 'Informações sobre os Produtos',
+            'attachments' => 'Attachments',
+            'attachments-info' => 'Upload a PDF and tag it with a document bucket.',
+            'attachment-file' => 'File',
+            'attachment-bucket' => 'Bucket',
         ],
         'edit' => [
             'title' => 'Editar Negócio',
