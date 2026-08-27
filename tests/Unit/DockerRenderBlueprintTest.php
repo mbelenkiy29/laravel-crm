@@ -66,11 +66,16 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($render)->toContain('healthCheckPath: /healthz');
     expect($render)->toContain('APP_URL');
     expect($render)->toContain('MYSQL_ROOT_PASSWORD');
+    expect($render)->toContain('ADMIN_EMAIL');
+    expect($render)->toContain('mbelenkiy29@gmail.com');
+    expect($render)->toMatch('/key: ADMIN_PASSWORD\n\s+generateValue: true/');
+    expect($render)->not->toMatch('/key: ADMIN_PASSWORD\n\s+value:/');
     expect($entrypoint)->toContain('migrate:fresh --force');
     expect($entrypoint)->toContain('db:seed --force');
-    expect($entrypoint)->toContain('--skip-admin-creation');
+    expect($entrypoint)->toContain('krayin:rotate-admin');
     expect($entrypoint)->toContain('--no-interaction');
     expect($entrypoint)->toContain('json_encode');
+    expect($entrypoint)->toContain('ADMIN_PASSWORD');
     expect($entrypoint)->toContain('ALTER USER');
     expect($entrypoint)->toContain('0.0.0.0');
     expect($entrypoint)->toContain('supervisord');
