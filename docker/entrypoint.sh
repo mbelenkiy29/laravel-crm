@@ -30,6 +30,8 @@ export MAIL_USERNAME="${MAIL_USERNAME:-}"
 export MAIL_PASSWORD="${MAIL_PASSWORD:-}"
 export MAIL_ENCRYPTION="${MAIL_ENCRYPTION:-}"
 export MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-laravel@krayincrm.com}"
+export ADMIN_EMAIL="${ADMIN_EMAIL:-}"
+export ADMIN_PASSWORD="${ADMIN_PASSWORD:-}"
 
 mkdir -p \
     storage/app/public \
@@ -71,6 +73,7 @@ $keys = [
     "DB_USERNAME", "DB_PASSWORD", "DB_PREFIX",
     "MAIL_MAILER", "MAIL_HOST", "MAIL_PORT", "MAIL_USERNAME",
     "MAIL_PASSWORD", "MAIL_ENCRYPTION", "MAIL_FROM_ADDRESS", "MAIL_FROM_NAME",
+    "ADMIN_EMAIL", "ADMIN_PASSWORD",
 ];
 $defaults = [
     "MAIL_FROM_NAME" => getenv("APP_NAME") ?: "Krayin CRM",
@@ -206,8 +209,8 @@ fi
 wait_for_mysql_as app
 
 if ! already_installed; then
-    echo "First boot: equivalent of krayin-crm:install --skip-env-check --skip-admin-creation"
-    echo "Using migrate:fresh --force (production has no TTY) and process-env DB_PASSWORD (not the installer .env parser)."
+    echo "First boot: migrate:fresh --force, db:seed --force, then krayin:rotate-admin"
+    echo "Using process-env DB_PASSWORD (not the installer .env parser). Default installer admin is disabled when ADMIN_PASSWORD is set."
     php artisan migrate:fresh --force --no-interaction
     php artisan db:seed --force --no-interaction
     php artisan vendor:publish --provider="Webkul\\Core\\Providers\\CoreServiceProvider" --force --no-interaction
@@ -217,6 +220,8 @@ if ! already_installed; then
 else
     echo "Krayin already installed; skipping installer."
 fi
+
+php artisan krayin:rotate-admin --no-interaction
 
 php artisan storage:link --force >/dev/null 2>&1 || true
 

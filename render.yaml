@@ -57,6 +57,10 @@ services:
           name: krayin-mysql
           type: pserv
           envVarKey: MYSQL_ROOT_PASSWORD
+      - key: ADMIN_EMAIL
+        value: mbelenkiy29@gmail.com
+      - key: ADMIN_PASSWORD
+        generateValue: true
 
   - type: pserv
     name: krayin-mysql
