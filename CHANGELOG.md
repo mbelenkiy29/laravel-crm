@@ -4,6 +4,8 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
+* [fixed] Admin Vite assets and app URLs now use https on Render so the login page is not mixed content.
+
 * [security] Render boot disables the installer default administrator and creates the operator admin from ADMIN_EMAIL and ADMIN_PASSWORD so the documented seed account cannot reach the dashboard.
 
 * [fixed] Render first-boot now binds `0.0.0.0:$PORT` and serves `/healthz` before migrations, and the web service re-applies MySQL grants as root so `krayin`@`%` matches generateValue passwords.
