@@ -13,15 +13,28 @@ export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export MAIL_MAILER="${MAIL_MAILER:-log}"
 export APP_URL="${APP_URL:-${RENDER_EXTERNAL_URL:-http://localhost}}"
-case "${RENDER_EXTERNAL_URL:-$APP_URL}" in
-    https://*)
-        case "$APP_URL" in
-            http://*) APP_URL="https://${APP_URL#http://}" ;;
-        esac
+to_https() {
+    case "$1" in
+        http://*) printf '%s' "https://${1#http://}" ;;
+        *) printf '%s' "$1" ;;
+    esac
+}
+# Render terminates TLS at the proxy. Never persist http APP_URL/ASSET_URL there,
+# even if the dashboard still has APP_URL=http://...
+if [ -n "${RENDER:-}" ] || [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
+    APP_URL="$(to_https "$APP_URL")"
+fi
+case "$APP_URL" in
+    http://*.onrender.com*|http://*onrender.com*)
+        APP_URL="$(to_https "$APP_URL")"
         ;;
 esac
 export APP_URL
-export ASSET_URL="${ASSET_URL:-$APP_URL}"
+ASSET_URL="${ASSET_URL:-$APP_URL}"
+if [ -n "${RENDER:-}" ] || [ -n "${RENDER_EXTERNAL_URL:-}" ]; then
+    ASSET_URL="$(to_https "$ASSET_URL")"
+fi
+export ASSET_URL
 export APP_NAME="${APP_NAME:-Krayin CRM}"
 export APP_LOCALE="${APP_LOCALE:-en}"
 export APP_CURRENCY="${APP_CURRENCY:-USD}"
