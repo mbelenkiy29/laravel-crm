@@ -75,7 +75,8 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($entrypoint)->toContain('migrate:fresh --force');
     expect($entrypoint)->toContain('db:seed --force');
     expect($entrypoint)->toContain('ASSET_URL');
-    expect($entrypoint)->toContain('https://');
+    expect($entrypoint)->toContain('to_https');
+    expect($entrypoint)->toContain('RENDER');
     expect($entrypoint)->toContain('krayin:rotate-admin');
     expect($entrypoint)->toContain('--no-interaction');
     expect($entrypoint)->toContain('json_encode');
@@ -89,6 +90,7 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($nginx)->toContain('HTTP_X_FORWARDED_PROTO');
     $provider = file_get_contents($root.'/app/Providers/AppServiceProvider.php');
     expect($provider)->toContain('forceScheme');
+    expect($provider)->toContain('useAssetOrigin');
     expect($provider)->toContain('RENDER_EXTERNAL_URL');
     $mysqlEntrypoint = file_get_contents($root.'/docker/mysql/entrypoint.sh');
     expect($mysqlEntrypoint)->toContain('ALTER USER');
