@@ -13,6 +13,9 @@ export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export MAIL_MAILER="${MAIL_MAILER:-log}"
 export APP_URL="${APP_URL:-${RENDER_EXTERNAL_URL:-http://localhost}}"
+export APP_NAME="${APP_NAME:-Krayin CRM}"
+export APP_LOCALE="${APP_LOCALE:-en}"
+export APP_CURRENCY="${APP_CURRENCY:-USD}"
 export DB_CONNECTION="${DB_CONNECTION:-mysql}"
 export DB_HOST="${DB_HOST:-mysql}"
 export DB_PORT="${DB_PORT:-3306}"
@@ -20,6 +23,12 @@ export DB_DATABASE="${DB_DATABASE:-krayin}"
 export DB_USERNAME="${DB_USERNAME:-krayin}"
 export DB_PASSWORD="${DB_PASSWORD:-}"
 export DB_PREFIX="${DB_PREFIX:-}"
+export MAIL_HOST="${MAIL_HOST:-mailhog}"
+export MAIL_PORT="${MAIL_PORT:-1025}"
+export MAIL_USERNAME="${MAIL_USERNAME:-}"
+export MAIL_PASSWORD="${MAIL_PASSWORD:-}"
+export MAIL_ENCRYPTION="${MAIL_ENCRYPTION:-}"
+export MAIL_FROM_ADDRESS="${MAIL_FROM_ADDRESS:-laravel@krayincrm.com}"
 
 mkdir -p \
     storage/app/public \
@@ -50,50 +59,38 @@ esac
 mkdir -p storage/app
 printf '%s' "$APP_KEY" > "$KEY_FILE"
 
-# Installer loadEnvConfigAtRuntime() reads .env on disk, not process env.
-cat > .env <<EOF
-APP_NAME="${APP_NAME:-Krayin CRM}"
-APP_ENV=${APP_ENV}
-APP_KEY=${APP_KEY}
-APP_DEBUG=${APP_DEBUG}
-APP_URL=${APP_URL}
-APP_TIMEZONE=${APP_TIMEZONE}
-APP_LOCALE=${APP_LOCALE:-en}
-APP_CURRENCY=${APP_CURRENCY:-USD}
-
-LOG_CHANNEL=stack
-LOG_LEVEL=debug
-
-DB_CONNECTION=${DB_CONNECTION}
-DB_HOST=${DB_HOST}
-DB_PORT=${DB_PORT}
-DB_DATABASE=${DB_DATABASE}
-DB_USERNAME=${DB_USERNAME}
-DB_PASSWORD=${DB_PASSWORD}
-DB_PREFIX=${DB_PREFIX}
-
-BROADCAST_DRIVER=log
-CACHE_DRIVER=file
-QUEUE_CONNECTION=sync
-SESSION_DRIVER=file
-SESSION_LIFETIME=120
-
-MAIL_MAILER=${MAIL_MAILER}
-MAIL_HOST=${MAIL_HOST:-mailhog}
-MAIL_PORT=${MAIL_PORT:-1025}
-MAIL_USERNAME=${MAIL_USERNAME:-null}
-MAIL_PASSWORD=${MAIL_PASSWORD:-null}
-MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-null}
-MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-laravel@krayincrm.com}
-MAIL_FROM_NAME="\${APP_NAME}"
-EOF
+# Quote values so Render generateValue passwords (base64, often containing "=")
+# survive phpdotenv. krayin-crm:install's getEnvAtRuntime() explodes on every
+# "=" and would truncate those passwords — do not use it for first boot.
+php -r '
+$keys = [
+    "APP_NAME", "APP_ENV", "APP_KEY", "APP_DEBUG", "APP_URL",
+    "APP_TIMEZONE", "APP_LOCALE", "APP_CURRENCY",
+    "DB_CONNECTION", "DB_HOST", "DB_PORT", "DB_DATABASE",
+    "DB_USERNAME", "DB_PASSWORD", "DB_PREFIX",
+    "MAIL_MAILER", "MAIL_HOST", "MAIL_PORT", "MAIL_USERNAME",
+    "MAIL_PASSWORD", "MAIL_ENCRYPTION", "MAIL_FROM_ADDRESS", "MAIL_FROM_NAME",
+];
+$defaults = [
+    "MAIL_FROM_NAME" => getenv("APP_NAME") ?: "Krayin CRM",
+];
+$out = "LOG_CHANNEL=stack\nLOG_LEVEL=debug\nBROADCAST_DRIVER=log\nCACHE_DRIVER=file\nQUEUE_CONNECTION=sync\nSESSION_DRIVER=file\nSESSION_LIFETIME=120\n";
+foreach ($keys as $key) {
+    $value = getenv($key);
+    if ($value === false || $value === "") {
+        $value = $defaults[$key] ?? "";
+    }
+    $out .= $key."=".json_encode($value, JSON_UNESCAPED_SLASHES)."\n";
+}
+file_put_contents(".env", $out);
+'
 
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R ug+rwx storage bootstrap/cache
 
 wait_for_mysql() {
     i=0
-    while [ "$i" -lt 60 ]; do
+    while [ "$i" -lt 90 ]; do
         if php -r '
             $host = getenv("DB_HOST");
             $port = getenv("DB_PORT") ?: "3306";
@@ -104,16 +101,20 @@ wait_for_mysql() {
                 new PDO("mysql:host={$host};port={$port};dbname={$db}", $user, $pass);
                 exit(0);
             } catch (Throwable $e) {
+                fwrite(STDERR, $e->getMessage()."\n");
                 exit(1);
             }
-        '; then
+        ' 2>/tmp/mysql-wait.err; then
             return 0
         fi
         i=$((i + 1))
-        echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT} (${i}/60)..."
+        echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT} (${i}/90)..."
         sleep 2
     done
     echo "MySQL did not become ready in time." >&2
+    if [ -f /tmp/mysql-wait.err ]; then
+        sed 's/using password: .*/using password: YES/' /tmp/mysql-wait.err >&2 || true
+    fi
     return 1
 }
 
@@ -141,8 +142,13 @@ already_installed() {
 wait_for_mysql
 
 if ! already_installed; then
-    echo "First boot: running krayin-crm:install --skip-env-check --skip-admin-creation"
-    php artisan krayin-crm:install --skip-env-check --skip-admin-creation --no-interaction
+    echo "First boot: equivalent of krayin-crm:install --skip-env-check --skip-admin-creation"
+    echo "Using migrate:fresh --force (production has no TTY) and process-env DB_PASSWORD (not the installer .env parser)."
+    php artisan migrate:fresh --force --no-interaction
+    php artisan db:seed --force --no-interaction
+    php artisan vendor:publish --provider="Webkul\\Core\\Providers\\CoreServiceProvider" --force --no-interaction
+    php artisan storage:link --force --no-interaction
+    php artisan optimize:clear --no-interaction
     echo "Krayin is successfully installed" > storage/installed
 else
     echo "Krayin already installed; skipping installer."
