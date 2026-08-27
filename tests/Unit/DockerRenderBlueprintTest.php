@@ -43,7 +43,7 @@ test('compose bind-mounts only ./storage and does not expose phpmyadmin or passw
     expect($matches[1] ?? '')->toBe("      - ./storage:/var/www/html/storage\n");
 });
 
-test('render blueprint uses this docker image, private mysql 8.0.40, and first-boot install flags', function () use ($root) {
+test('render first-boot is non-interactive and does not parse generateValue passwords via the installer', function () use ($root) {
     $render = file_get_contents($root.'/render.yaml');
     $entrypoint = file_get_contents($root.'/docker/entrypoint.sh');
     $mysqlDockerfile = file_get_contents($root.'/docker/mysql/Dockerfile');
@@ -63,7 +63,9 @@ test('render blueprint uses this docker image, private mysql 8.0.40, and first-b
     expect($render)->toContain('value: "false"');
     expect($mysqlDockerfile)->toContain('mysql:8.0.40');
     expect($charset)->toContain('utf8mb4_unicode_ci');
-    expect($entrypoint)->toContain('krayin-crm:install');
+    expect($entrypoint)->toContain('migrate:fresh --force');
+    expect($entrypoint)->toContain('db:seed --force');
     expect($entrypoint)->toContain('--skip-admin-creation');
-    expect($entrypoint)->toContain('--skip-env-check');
+    expect($entrypoint)->toContain('--no-interaction');
+    expect($entrypoint)->toContain('json_encode');
 });
