@@ -65,6 +65,8 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($charset)->toContain('utf8mb4_unicode_ci');
     expect($render)->toContain('healthCheckPath: /healthz');
     expect($render)->toContain('APP_URL');
+    expect($render)->toContain('https://krayin-crm-c1gg.onrender.com');
+    expect($render)->toMatch('/key: ASSET_URL\n\s+value: https:/');
     expect($render)->toContain('MYSQL_ROOT_PASSWORD');
     expect($render)->toContain('ADMIN_EMAIL');
     expect($render)->toContain('mbelenkiy29@gmail.com');
@@ -72,6 +74,8 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($render)->not->toMatch('/key: ADMIN_PASSWORD\n\s+value:/');
     expect($entrypoint)->toContain('migrate:fresh --force');
     expect($entrypoint)->toContain('db:seed --force');
+    expect($entrypoint)->toContain('ASSET_URL');
+    expect($entrypoint)->toContain('https://');
     expect($entrypoint)->toContain('krayin:rotate-admin');
     expect($entrypoint)->toContain('--no-interaction');
     expect($entrypoint)->toContain('json_encode');
@@ -82,6 +86,10 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     $nginx = file_get_contents($root.'/docker/nginx/default.conf');
     expect($nginx)->toContain('location = /healthz');
     expect($nginx)->toContain('listen 0.0.0.0:80');
+    expect($nginx)->toContain('HTTP_X_FORWARDED_PROTO');
+    $provider = file_get_contents($root.'/app/Providers/AppServiceProvider.php');
+    expect($provider)->toContain('forceScheme');
+    expect($provider)->toContain('RENDER_EXTERNAL_URL');
     $mysqlEntrypoint = file_get_contents($root.'/docker/mysql/entrypoint.sh');
     expect($mysqlEntrypoint)->toContain('ALTER USER');
     expect($mysqlEntrypoint)->toContain("'%'");

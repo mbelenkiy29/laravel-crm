@@ -13,6 +13,15 @@ export APP_ENV="${APP_ENV:-production}"
 export APP_DEBUG="${APP_DEBUG:-false}"
 export MAIL_MAILER="${MAIL_MAILER:-log}"
 export APP_URL="${APP_URL:-${RENDER_EXTERNAL_URL:-http://localhost}}"
+case "${RENDER_EXTERNAL_URL:-$APP_URL}" in
+    https://*)
+        case "$APP_URL" in
+            http://*) APP_URL="https://${APP_URL#http://}" ;;
+        esac
+        ;;
+esac
+export APP_URL
+export ASSET_URL="${ASSET_URL:-$APP_URL}"
 export APP_NAME="${APP_NAME:-Krayin CRM}"
 export APP_LOCALE="${APP_LOCALE:-en}"
 export APP_CURRENCY="${APP_CURRENCY:-USD}"
@@ -68,6 +77,7 @@ printf '%s' "$APP_KEY" > "$KEY_FILE"
 php -r '
 $keys = [
     "APP_NAME", "APP_ENV", "APP_KEY", "APP_DEBUG", "APP_URL",
+    "ASSET_URL",
     "APP_TIMEZONE", "APP_LOCALE", "APP_CURRENCY",
     "DB_CONNECTION", "DB_HOST", "DB_PORT", "DB_DATABASE",
     "DB_USERNAME", "DB_PASSWORD", "DB_PREFIX",

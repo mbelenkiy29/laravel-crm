@@ -22,6 +22,8 @@ services:
         generateValue: true
       - key: APP_URL
         value: https://krayin-crm-c1gg.onrender.com
+      - key: ASSET_URL
+        value: https://krayin-crm-c1gg.onrender.com
       - key: APP_TIMEZONE
         value: America/New_York
       - key: TZ
