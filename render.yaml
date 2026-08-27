@@ -1,14 +1,14 @@
-# K3 Render blueprint. Do not create live Render services from this ticket.
-# Web image is this repo's Dockerfile (PHP 8.3-FPM + NGINX), not the Hub 2.0.1 image.
-# APP_URL is left unset here and supplied from Render after first deploy.
+# K3 Render blueprint. Docker web from this tree + private MySQL 8.0.40.
+# APP_URL is the live Render hostname; first boot still prefers RENDER_EXTERNAL_URL if set.
 services:
   - type: web
     name: krayin-crm
     runtime: docker
     plan: starter
+    branch: 2.2
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /admin/login
+    healthCheckPath: /up
     disk:
       name: krayin-storage
       mountPath: /var/www/html/storage
@@ -20,6 +20,8 @@ services:
         value: "false"
       - key: APP_KEY
         generateValue: true
+      - key: APP_URL
+        value: https://krayin-crm-c1gg.onrender.com
       - key: APP_TIMEZONE
         value: America/New_York
       - key: TZ
@@ -55,6 +57,7 @@ services:
     name: krayin-mysql
     runtime: docker
     plan: starter
+    branch: 2.2
     dockerfilePath: ./docker/mysql/Dockerfile
     dockerContext: ./docker/mysql
     disk:
@@ -70,3 +73,5 @@ services:
         generateValue: true
       - key: MYSQL_ROOT_PASSWORD
         generateValue: true
+      - key: MYSQL_ROOT_HOST
+        value: "%"

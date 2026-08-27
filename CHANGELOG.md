@@ -4,6 +4,8 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
+* [fixed] Render MySQL now re-applies the `krayin`@`%` grants on every start so the web service password matches after generateValue, and first-boot health checks `/up` instead of `/admin/login`.
+
 * [fixed] First-boot on Render no longer cancels migrate:fresh in production or truncates generateValue database passwords. The entrypoint runs migrate:fresh --force and db:seed --force (skip-admin-creation equivalent) using process environment credentials.
 
 * [feature] Added PHP 8.3-FPM + NGINX Docker files and a Render blueprint so this fork can be cloned and deployed without the Hub 2.0.1 image. Compose interpolates DB passwords from the environment instead of storing them in git; Render generates a unique APP_KEY at runtime.
