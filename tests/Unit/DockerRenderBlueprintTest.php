@@ -63,9 +63,14 @@ test('render first-boot is non-interactive and does not parse generateValue pass
     expect($render)->toContain('value: "false"');
     expect($mysqlDockerfile)->toContain('mysql:8.0.40');
     expect($charset)->toContain('utf8mb4_unicode_ci');
+    expect($render)->toContain('healthCheckPath: /up');
+    expect($render)->toContain('APP_URL');
     expect($entrypoint)->toContain('migrate:fresh --force');
     expect($entrypoint)->toContain('db:seed --force');
     expect($entrypoint)->toContain('--skip-admin-creation');
     expect($entrypoint)->toContain('--no-interaction');
     expect($entrypoint)->toContain('json_encode');
+    $mysqlEntrypoint = file_get_contents($root.'/docker/mysql/entrypoint.sh');
+    expect($mysqlEntrypoint)->toContain('ALTER USER');
+    expect($mysqlEntrypoint)->toContain("'%'");
 });
