@@ -14,6 +14,7 @@ test('dockerfile uses php 8.3 fpm and nginx rather than the hub 2.0.1 image', fu
     expect($dockerfile)->toContain('php:8.3-fpm');
     expect($dockerfile)->toContain('nginx');
     expect($dockerfile)->toContain('composer:2');
+    expect($dockerfile)->toContain('calendar');
     expect($dockerfile)->toContain('gd');
     expect($dockerfile)->toContain('intl');
     expect($dockerfile)->toContain('America/New_York');

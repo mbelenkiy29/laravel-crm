@@ -1,5 +1,5 @@
 # PHP 8.3-FPM + NGINX image for this Krayin 2.2 fork.
-# Do not FROM webkul/krayin:2.0.1 (Hub image is not Laravel 12).
+# Do not FROM the Docker Hub Krayin 2.0.1 image (that image is not Laravel 12).
 FROM php:8.3-fpm-bookworm
 
 ENV TZ=America/New_York \
@@ -28,6 +28,7 @@ RUN apt-get update \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath \
+        calendar \
         exif \
         gd \
         intl \

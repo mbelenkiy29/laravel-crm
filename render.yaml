@@ -1,5 +1,5 @@
 # K3 Render blueprint. Do not create live Render services from this ticket.
-# Web image is this repo's Dockerfile (PHP 8.3-FPM + NGINX), not webkul/krayin:2.0.1.
+# Web image is this repo's Dockerfile (PHP 8.3-FPM + NGINX), not the Hub 2.0.1 image.
 # APP_URL is left unset here and supplied from Render after first deploy.
 services:
   - type: web
