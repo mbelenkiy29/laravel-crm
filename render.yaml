@@ -8,7 +8,7 @@ services:
     branch: 2.2
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /up
+    healthCheckPath: /healthz
     disk:
       name: krayin-storage
       mountPath: /var/www/html/storage
@@ -52,6 +52,11 @@ services:
           name: krayin-mysql
           type: pserv
           envVarKey: MYSQL_PASSWORD
+      - key: MYSQL_ROOT_PASSWORD
+        fromService:
+          name: krayin-mysql
+          type: pserv
+          envVarKey: MYSQL_ROOT_PASSWORD
 
   - type: pserv
     name: krayin-mysql
