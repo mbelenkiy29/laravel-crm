@@ -1,0 +1,72 @@
+# K3 Render blueprint. Do not create live Render services from this ticket.
+# Web image is this repo's Dockerfile (PHP 8.3-FPM + NGINX), not the Hub 2.0.1 image.
+# APP_URL is left unset here and supplied from Render after first deploy.
+services:
+  - type: web
+    name: krayin-crm
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /admin/login
+    disk:
+      name: krayin-storage
+      mountPath: /var/www/html/storage
+      sizeGB: 10
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_TIMEZONE
+        value: America/New_York
+      - key: TZ
+        value: America/New_York
+      - key: MAIL_MAILER
+        value: log
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        fromService:
+          name: krayin-mysql
+          type: pserv
+          property: host
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        fromService:
+          name: krayin-mysql
+          type: pserv
+          envVarKey: MYSQL_DATABASE
+      - key: DB_USERNAME
+        fromService:
+          name: krayin-mysql
+          type: pserv
+          envVarKey: MYSQL_USER
+      - key: DB_PASSWORD
+        fromService:
+          name: krayin-mysql
+          type: pserv
+          envVarKey: MYSQL_PASSWORD
+
+  - type: pserv
+    name: krayin-mysql
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./docker/mysql/Dockerfile
+    dockerContext: ./docker/mysql
+    disk:
+      name: krayin-mysql
+      mountPath: /var/lib/mysql
+      sizeGB: 10
+    envVars:
+      - key: MYSQL_DATABASE
+        value: krayin
+      - key: MYSQL_USER
+        value: krayin
+      - key: MYSQL_PASSWORD
+        generateValue: true
+      - key: MYSQL_ROOT_PASSWORD
+        generateValue: true
