@@ -4,7 +4,7 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
-* [feature] Added PHP 8.3-FPM + NGINX Docker files and a Render blueprint so this fork can be cloned and deployed without the Hub 2.0.1 image.
+* [feature] Added PHP 8.3-FPM + NGINX Docker files and a Render blueprint so this fork can be cloned and deployed without the Hub 2.0.1 image. Compose interpolates DB passwords from the environment instead of storing them in git; Render generates a unique APP_KEY at runtime.
 
 * [fixed] Added the missing Chinese translations for the users grid's associated group column.
 

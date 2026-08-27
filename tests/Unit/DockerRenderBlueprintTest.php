@@ -29,13 +29,15 @@ test('php.ini sets the required memory and timeout limits', function () use ($ro
     expect($ini)->toContain('date.timezone = America/New_York');
 });
 
-test('compose bind-mounts only ./storage and does not expose phpmyadmin', function () use ($root) {
+test('compose bind-mounts only ./storage and does not expose phpmyadmin or passwords', function () use ($root) {
     $compose = file_get_contents($root.'/docker-compose.yml');
 
     expect($compose)->toContain('./storage:/var/www/html/storage');
     expect($compose)->toContain('mysql:8.0.40');
     expect($compose)->not->toContain('phpmyadmin');
     expect($compose)->not->toContain('webkul/krayin:2.0.1');
+    expect($compose)->not->toContain('DB_PASSWORD: krayin');
+    expect($compose)->not->toContain('MYSQL_ROOT_PASSWORD: root');
 
     preg_match('/  krayin:\n(?:.*\n)*?    volumes:\n((?:      - .*\n)+)/', $compose, $matches);
     expect($matches[1] ?? '')->toBe("      - ./storage:/var/www/html/storage\n");
@@ -54,8 +56,11 @@ test('render blueprint uses this docker image, private mysql 8.0.40, and first-b
     expect($render)->toContain('mountPath: /var/www/html/storage');
     expect($render)->toContain('APP_KEY');
     expect($render)->toContain('generateValue: true');
+    expect($render)->not->toMatch('/key: APP_KEY\n\s+value:/');
     expect($render)->toContain('MAIL_MAILER');
+    expect($render)->toContain('value: log');
     expect($render)->toContain('APP_DEBUG');
+    expect($render)->toContain('value: "false"');
     expect($mysqlDockerfile)->toContain('mysql:8.0.40');
     expect($charset)->toContain('utf8mb4_unicode_ci');
     expect($entrypoint)->toContain('krayin-crm:install');

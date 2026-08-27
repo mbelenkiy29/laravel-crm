@@ -18,7 +18,7 @@ services:
       DB_PORT: "3306"
       DB_DATABASE: krayin
       DB_USERNAME: krayin
-      DB_PASSWORD: krayin
+      DB_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./storage:/var/www/html/storage
     depends_on:
@@ -33,12 +33,12 @@ services:
     environment:
       MYSQL_DATABASE: krayin
       MYSQL_USER: krayin
-      MYSQL_PASSWORD: krayin
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
       interval: 5s
       timeout: 5s
       retries: 20

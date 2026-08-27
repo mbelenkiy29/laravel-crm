@@ -18,7 +18,7 @@ export DB_HOST="${DB_HOST:-mysql}"
 export DB_PORT="${DB_PORT:-3306}"
 export DB_DATABASE="${DB_DATABASE:-krayin}"
 export DB_USERNAME="${DB_USERNAME:-krayin}"
-export DB_PASSWORD="${DB_PASSWORD:-krayin}"
+export DB_PASSWORD="${DB_PASSWORD:-}"
 export DB_PREFIX="${DB_PREFIX:-}"
 
 mkdir -p \
