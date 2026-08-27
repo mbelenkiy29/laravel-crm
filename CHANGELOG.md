@@ -4,6 +4,8 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
+* [feature] Added a Funders settings area so operators can store funder destinations and submit a lead to a sandbox funder, which writes a fixture quote on the lead.
+
 * [feature] Broker leads now use documented pipeline stages, business identity attributes, attachment buckets, and a Rep assignment.
 
 * [fixed] Admin Vite assets stay https on Render even when APP_URL is http, so the login form is not mixed content.

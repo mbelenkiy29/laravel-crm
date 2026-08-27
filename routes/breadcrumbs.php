@@ -373,6 +373,12 @@ Breadcrumbs::for('settings.web_forms.edit', function (BreadcrumbTrail $trail, $w
     $trail->push(trans('admin::app.settings.webforms.edit.title'), route('admin.settings.web_forms.edit', $webForm->id));
 });
 
+// Settings > Funders
+Breadcrumbs::for('settings.funders', function (BreadcrumbTrail $trail) {
+    $trail->parent('settings');
+    $trail->push(trans('funder::app.menu.funders'), route('admin.settings.funders.index'));
+});
+
 // Settings > Warehouse
 Breadcrumbs::for('settings.warehouses', function (BreadcrumbTrail $trail) {
     $trail->parent('settings');
