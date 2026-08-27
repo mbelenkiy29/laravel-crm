@@ -1,0 +1,47 @@
+services:
+  krayin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: krayin-crm:2.2
+    ports:
+      - "80:80"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "false"
+      APP_URL: http://localhost
+      APP_TIMEZONE: America/New_York
+      TZ: America/New_York
+      MAIL_MAILER: log
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: "3306"
+      DB_DATABASE: krayin
+      DB_USERNAME: krayin
+      DB_PASSWORD: krayin
+    volumes:
+      - ./storage:/var/www/html/storage
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    build:
+      context: ./docker/mysql
+      dockerfile: Dockerfile
+    image: krayin-mysql:8.0.40
+    environment:
+      MYSQL_DATABASE: krayin
+      MYSQL_USER: krayin
+      MYSQL_PASSWORD: krayin
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql-data:
