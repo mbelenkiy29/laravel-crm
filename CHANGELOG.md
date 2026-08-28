@@ -4,6 +4,8 @@ This changelog consists of the bug & security fixes and new features being inclu
 
 ## **v2.2.6 (19th of Aug 2026)**
 
+* [feature] Added Cloud Agent development environment scripts (`.cursor/install.sh` and `.cursor/start.sh`) that provision a seeded Krayin database on PHP 8.3 and MySQL 8.0 so background agents come up ready to run.
+
 * [feature] Added a Funders settings area so operators can store funder destinations and submit a lead to a sandbox funder, which writes a fixture quote on the lead.
 
 * [feature] Broker leads now use documented pipeline stages, business identity attributes, attachment buckets, and a Rep assignment.
